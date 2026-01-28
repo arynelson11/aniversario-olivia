@@ -124,9 +124,7 @@ const TicketPdf = ({ name, guests, companions, meat, drinks }: any) => (
         <View style={ { width: '100%', marginBottom: 15 } }>
             <Text style={ styles.label }> Acompanhantes </Text>
                 < Text style = {{ fontSize: 12, color: '#555' }
-}>
-    { companions }
-    </Text>
+}> { companions } </Text>
     </View>
                 )}
 
@@ -224,7 +222,6 @@ export async function POST(request: Request) {
 
         const emailHtml = generateEmailHtml(name, guests, companions, meat, drinks);
 
-        // Generate PDF
         console.log("Generating PDF...");
         const pdfStream = await renderToStream(
             <TicketPdf 

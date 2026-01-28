@@ -14,7 +14,7 @@ export default function RSVP() {
         const formData = new FormData(e.currentTarget);
         const name = formData.get('name') as string;
         const email = formData.get('email') as string;
-        const message = formData.get('message') as string;
+
 
         // Collect companion names
         const companions: string[] = [];

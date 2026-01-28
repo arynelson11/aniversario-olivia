@@ -1,4 +1,6 @@
 import nodemailer from 'nodemailer';
+import React from 'react';
+import { Document, Page, Text, View, StyleSheet, renderToStream } from '@react-pdf/renderer';
 
 // IMPORTANT: Requires GMAIL_USER and GMAIL_APP_PASSWORD in env vars
 const transporter = nodemailer.createTransport({
@@ -8,6 +10,136 @@ const transporter = nodemailer.createTransport({
         pass: process.env.GMAIL_APP_PASSWORD,
     },
 });
+
+// PDF Styles
+const styles = StyleSheet.create({
+    page: {
+        flexDirection: 'column',
+        backgroundColor: '#FEFCF0',
+        padding: 40,
+        fontFamily: 'Helvetica',
+    },
+    card: {
+        border: '4px dashed #FFD700',
+        borderRadius: 20,
+        padding: 30,
+        height: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    title: {
+        fontSize: 30,
+        color: '#ffdf33',
+        fontWeight: 'bold',
+        marginBottom: 10,
+        textAlign: 'center',
+    },
+    subtitle: {
+        fontSize: 14,
+        color: '#888',
+        marginBottom: 40,
+        textAlign: 'center',
+    },
+    vipBox: {
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius: 15,
+        width: '100%',
+        marginBottom: 20,
+        border: '2px solid #FFF8E1',
+    },
+    label: {
+        fontSize: 10,
+        color: '#aaa',
+        textTransform: 'uppercase',
+        marginBottom: 5,
+    },
+    value: {
+        fontSize: 24,
+        color: '#5D4037',
+        fontWeight: 'bold',
+    },
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '100%',
+        gap: 15,
+        marginTop: 15,
+    },
+    statBox: {
+        flex: 1,
+        backgroundColor: '#FFF8E1',
+        padding: 15,
+        borderRadius: 10,
+        alignItems: 'center',
+    },
+    statValue: {
+        fontSize: 18,
+        color: '#5D4037',
+        fontWeight: 'bold',
+    },
+    detailsBox: {
+        marginTop: 20,
+        backgroundColor: '#FFF8E1',
+        padding: 15,
+        borderRadius: 10,
+        width: '100%',
+    },
+    footer: {
+        position: 'absolute',
+        bottom: 30,
+        fontSize: 10,
+        color: '#ddd',
+        textTransform: 'uppercase',
+        letterSpacing: 2,
+    }
+});
+
+// PDF Component
+const TicketPdf = ({ name, guests, companions, meat, drinks }: any) => (
+    <Document>
+    <Page size= "A6" style = { styles.page } >
+        <View style={ styles.card }>
+            <Text style={ styles.title }> Oba! Voce vai! 🎉</Text>
+                < Text style = { styles.subtitle } > Sua presenca foi confirmada.</Text>
+
+                    < View style = { styles.vipBox } >
+                        <Text style={ styles.label }> Convidado VIP </Text>
+                            < Text style = { styles.value } > { name } </Text>
+
+                                < View style = { styles.row } >
+                                    <View style={ styles.statBox }>
+                                        <Text style={ styles.label }> Total </Text>
+                                            < Text style = { styles.statValue } > { guests } Pessoas </Text>
+                                                </View>
+                                                < View style = { styles.statBox } >
+                                                    <Text style={ styles.label }> Data </Text>
+                                                        < Text style = { styles.statValue } > 16 /02 </Text>
+                                                            </View>
+                                                            </View>
+                                                            </View>
+
+{
+    guests > 1 && (
+        <View style={ { width: '100%', marginBottom: 15 } }>
+            <Text style={ styles.label }> Acompanhantes </Text>
+                < Text style = {{ fontSize: 12, color: '#555' }
+}> { companions } </Text>
+    </View>
+                )}
+
+<View style={ styles.detailsBox }>
+    <Text style={ styles.label }> Sugestao para levar: </Text>
+        < Text style = {{ fontSize: 12, color: '#555', marginTop: 5 }}>🍖 { meat } de Carne </Text>
+            < Text style = {{ fontSize: 12, color: '#555' }}>🥤 { drinks } de Bebida </Text>
+                </View>
+
+                < Text style = { styles.footer } > TICKET DIGITAL • ANIVERSARIO DA OLIVIA </Text>
+                    </View>
+                    </Page>
+                    </Document>
+);
+
 
 function generateEmailHtml(name: string, guests: number, companions: string, meat: string, drinks: string) {
     return `
@@ -91,11 +223,29 @@ export async function POST(request: Request) {
 
         const emailHtml = generateEmailHtml(name, guests, companions, meat, drinks);
 
+        // Generate PDF
+        console.log("Generating PDF...");
+        const pdfStream = await renderToStream(
+            <TicketPdf 
+                name={ name } 
+                guests = { guests } 
+                companions = { companions } 
+                meat = { meat } 
+                drinks = { drinks }
+            />
+        );
+
         const mailOptions = {
             from: `"Aniversário da Olívia" <${process.env.GMAIL_USER}>`,
             to: `${email}, aniversariodaolivia1@gmail.com`,
             subject: `Confirmação VIP: ${name} no Aniversário da Olívia! 🌼`,
             html: emailHtml,
+            attachments: [
+                {
+                    filename: 'Ingresso-Olivia.pdf',
+                    content: pdfStream,
+                }
+            ]
         };
 
         console.log("Sending email...");

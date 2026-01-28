@@ -5,7 +5,7 @@ import { Send } from 'lucide-react';
 export default function RSVP() {
     const [formState, setFormState] = useState<'idle' | 'submitting' | 'success'>('idle');
     const [guests, setGuests] = useState(1);
-    const [ticketData, setTicketData] = useState<{ name: string, guests: number, companions: string } | null>(null);
+    const [ticketData, setTicketData] = useState<{ name: string, guests: number, companions: string, meat: string, drinks: string } | null>(null);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -24,6 +24,9 @@ export default function RSVP() {
         }
         const companionsString = companions.length > 0 ? companions.join(', ') : "Nenhum";
 
+        const meat = `${(guests * 0.4).toFixed(1)}kg`;
+        const drinks = `${(guests * 0.8).toFixed(1)}L`;
+
         try {
             const response = await fetch("/api/send", {
                 method: "POST",
@@ -35,8 +38,8 @@ export default function RSVP() {
                     email,
                     guests,
                     companions: companionsString,
-                    meat: `${(guests * 0.4).toFixed(1)}kg`,
-                    drinks: `${(guests * 0.8).toFixed(1)}L`
+                    meat,
+                    drinks
                 })
             });
 
@@ -45,7 +48,7 @@ export default function RSVP() {
                 throw new Error(errorData || 'Erro no servidor');
             }
 
-            setTicketData({ name, guests, companions: companionsString });
+            setTicketData({ name, guests, companions: companionsString, meat, drinks });
             setFormState('success');
         } catch (error) {
             console.error("Erro ao enviar:", error);
@@ -79,30 +82,40 @@ export default function RSVP() {
                             </div>
 
                             <div className="bg-white p-6 rounded-2xl border-2 border-primary/10 shadow-sm space-y-4 relative z-10">
-                                <div className="flex items-center gap-3 text-left border-b border-primary/10 pb-3">
-                                    <div className="bg-primary/20 p-2.5 rounded-full">
-                                        <Send className="text-primary w-5 h-5" />
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] text-text/50 uppercase font-bold tracking-wider">Convidado VIP</p>
-                                        <p className="font-heading text-xl text-text leading-tight">{ticketData.name}</p>
-                                    </div>
+                                <div className="border-b border-primary/10 pb-3 mb-3">
+                                    <p className="text-[10px] text-text/50 uppercase font-bold tracking-wider mb-1">Convidado VIP</p>
+                                    <p className="font-heading text-2xl text-text leading-tight">{ticketData.name}</p>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div className="text-center bg-primary/5 rounded-xl p-2">
+                                    <div className="text-center bg-primary/5 rounded-xl p-3">
                                         <p className="text-[10px] text-text/50 uppercase font-bold">Total</p>
                                         <p className="font-heading text-lg text-text">{ticketData.guests} {ticketData.guests === 1 ? 'Pessoa' : 'Pessoas'}</p>
                                     </div>
-                                    <div className="text-center bg-primary/5 rounded-xl p-2">
+                                    <div className="text-center bg-primary/5 rounded-xl p-3">
                                         <p className="text-[10px] text-text/50 uppercase font-bold">Data</p>
                                         <p className="font-heading text-lg text-text">16/02</p>
+                                    </div>
+                                </div>
+
+                                {ticketData.companions !== "Nenhum" && (
+                                    <div className="mt-4">
+                                        <p className="text-[10px] text-text/50 uppercase font-bold tracking-wider mb-1">Acompanhantes</p>
+                                        <p className="text-sm text-text leading-snug">{ticketData.companions}</p>
+                                    </div>
+                                )}
+
+                                <div className="bg-primary/5 p-4 rounded-xl mt-4 border border-primary/10">
+                                    <p className="text-[10px] text-text/50 uppercase font-bold tracking-wider mb-2">Sugestão para levar:</p>
+                                    <div className="flex gap-4">
+                                        <p className="text-sm text-text font-bold">🍖 {ticketData.meat}</p>
+                                        <p className="text-sm text-text font-bold">🥤 {ticketData.drinks}</p>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="mt-8 text-center space-y-2">
-                                <p className="text-text/60 text-xs">Enviamos uma cópia para seu email! 📧</p>
+                                <p className="text-text/60 text-xs">Enviamos uma cópia (PDF) para seu email! 📧</p>
                                 <p className="text-primary/40 text-[10px] uppercase tracking-[0.2em] font-bold">TICKET DIGITAL • ANIVERSÁRIO DA OLÍVIA</p>
                             </div>
                         </motion.div>

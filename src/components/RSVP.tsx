@@ -25,7 +25,7 @@ export default function RSVP() {
         const companionsString = companions.length > 0 ? companions.join(', ') : "Nenhum";
 
         try {
-            await fetch("/api/send", {
+            const response = await fetch("/api/send", {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json'
@@ -39,6 +39,12 @@ export default function RSVP() {
                     drinks: `${(guests * 0.8).toFixed(1)}L`
                 })
             });
+
+            if (!response.ok) {
+                const errorData = await response.text();
+                throw new Error(errorData || 'Erro no servidor');
+            }
+
             setTicketData({ name, guests, companions: companionsString });
             setFormState('success');
         } catch (error) {

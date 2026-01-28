@@ -11,11 +11,8 @@ export default function Hero() {
                 className="mb-8 relative"
             >
                 {/* Circular Photo Holder Placeholder */}
-                <div className="w-48 h-48 md:w-64 md:h-64 rounded-full bg-white shadow-xl flex items-center justify-center border-4 border-primary p-2">
-                    <div className="w-full h-full rounded-full bg-primary/20 flex items-center justify-center overflow-hidden relative">
-                        {/* In a real project, an <img> would go here */}
-                        <img src="/daisy.png" alt="Margarida" className="w-full h-full object-cover opacity-90" />
-                    </div>
+                <div className="w-48 h-48 md:w-64 md:h-64 flex items-center justify-center relative">
+                    <img src="/daisy.png" alt="Margarida" className="w-full h-full object-contain opacity-90" />
                 </div>
             </motion.div>
 

@@ -1,5 +1,4 @@
 import nodemailer from 'nodemailer';
-import React from 'react';
 import { Document, Page, Text, View, StyleSheet, renderToStream } from '@react-pdf/renderer';
 
 // IMPORTANT: Requires GMAIL_USER and GMAIL_APP_PASSWORD in env vars
@@ -207,6 +206,16 @@ function generateEmailHtml(name: string, guests: number, companions: string, mea
     `;
 }
 
+// Convert stream to buffer
+const streamToBuffer = async (stream: any): Promise<Buffer> => {
+    return new Promise((resolve, reject) => {
+        const chunks: Buffer[] = [];
+        stream.on('data', (chunk: any) => chunks.push(Buffer.from(chunk)));
+        stream.on('error', (err: any) => reject(err));
+        stream.on('end', () => resolve(Buffer.concat(chunks)));
+    });
+};
+
 export async function POST(request: Request) {
     try {
         console.log("API Invoked");
@@ -234,6 +243,10 @@ export async function POST(request: Request) {
             />
         );
 
+        // Convert stream to Buffer to avoid type issues with Nodemailer
+        console.log("Converting PDF to Buffer...");
+        const pdfBuffer = await streamToBuffer(pdfStream);
+
         const mailOptions = {
             from: `"Aniversário da Olívia" <${process.env.GMAIL_USER}>`,
             to: `${email}, aniversariodaolivia1@gmail.com`,
@@ -242,13 +255,14 @@ export async function POST(request: Request) {
             attachments: [
                 {
                     filename: 'Ingresso-Olivia.pdf',
-                    content: pdfStream,
+                    content: pdfBuffer,
+                    contentType: 'application/pdf'
                 }
             ]
         };
 
         console.log("Sending email...");
-        const info = await transporter.sendMail(mailOptions);
+        const info = await transporter.sendMail(mailOptions) as any;
         console.log("Email sent:", info.messageId);
 
         return new Response(JSON.stringify({ message: "Email sent", messageId: info.messageId }), {

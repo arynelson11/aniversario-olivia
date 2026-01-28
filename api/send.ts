@@ -101,7 +101,7 @@ const TicketPdf = ({ name, guests, companions, meat, drinks }: any) => (
     <Page size= "A6" style = { styles.page } >
         <View style={ styles.card }>
             <Text style={ styles.title }> Oba! Voce vai! 🎉</Text>
-                < Text style = { styles.subtitle } > Sua presença foi confirmada.</Text>
+                < Text style = { styles.subtitle } > Sua presenca foi confirmada.</Text>
 
                     < View style = { styles.vipBox } >
                         <Text style={ styles.label }> Convidado VIP </Text>

@@ -14,6 +14,14 @@ export default function RSVP() {
         const name = formData.get('name') as string;
         const message = formData.get('message') as string;
 
+        // Collect companion names
+        const companions: string[] = [];
+        for (let i = 0; i < guests - 1; i++) {
+            const companionName = formData.get(`guest_${i + 1}`) as string;
+            if (companionName) companions.push(companionName);
+        }
+        const companionsString = companions.length > 0 ? companions.join(', ') : "Nenhum";
+
         try {
             await fetch("https://formsubmit.co/ajax/aniversariodaolivia1@gmail.com", {
                 method: "POST",
@@ -24,8 +32,9 @@ export default function RSVP() {
                 body: JSON.stringify({
                     "Nome do Convidado": name,
                     "Total de Pessoas": `${guests}`,
+                    "Acompanhantes": companionsString,
                     "Mensagem": message || "Sem mensagem",
-                    _subject: `Nova Presença: ${name} (${guests} pessoas)`,
+                    _subject: `Nova Presença: ${name} + ${companions.length}`,
                     "🍖 Carne (kg)": `${(guests * 0.4).toFixed(1)}kg`,
                     "🥤 Bebida (L)": `${(guests * 0.8).toFixed(1)}L`,
                     _template: "table",
@@ -88,6 +97,24 @@ export default function RSVP() {
                                         <option key={num} value={num}>{num} {num === 1 ? 'Pessoa' : 'Pessoas'}</option>
                                     ))}
                                 </select>
+
+                                {guests > 1 && (
+                                    <div className="space-y-3 mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                                        <label className="block text-sm font-bold text-text pl-1">Nome dos Acompanhantes:</label>
+                                        <div className="space-y-2">
+                                            {[...Array(guests - 1)].map((_, index) => (
+                                                <input
+                                                    key={index}
+                                                    required
+                                                    type="text"
+                                                    name={`guest_${index + 1}`}
+                                                    className="w-full bg-background/50 border-2 border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary text-text placeholder-text/40 transition-colors text-sm"
+                                                    placeholder={`Nome do Acompanhante ${index + 1}`}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
 
                                 <div className="bg-primary/10 p-4 rounded-xl mt-4 border-2 border-primary/20">
                                     <p className="font-heading text-lg text-text mb-2">🍖 Sugestão para levar (Churrasco):</p>

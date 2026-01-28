@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Send, CheckCircle2 } from 'lucide-react';
+import { Send } from 'lucide-react';
 
 export default function RSVP() {
     const [formState, setFormState] = useState<'idle' | 'submitting' | 'success'>('idle');

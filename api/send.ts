@@ -101,7 +101,7 @@ const TicketPdf = ({ name, guests, companions, meat, drinks }: any) => (
     <Page size= "A6" style = { styles.page } >
         <View style={ styles.card }>
             <Text style={ styles.title }> Oba! Voce vai! 🎉</Text>
-                < Text style = { styles.subtitle } > Sua presenca foi confirmada.</Text>
+                < Text style = { styles.subtitle } > Sua presença foi confirmada.</Text>
 
                     < View style = { styles.vipBox } >
                         <Text style={ styles.label }> Convidado VIP </Text>
@@ -124,12 +124,14 @@ const TicketPdf = ({ name, guests, companions, meat, drinks }: any) => (
         <View style={ { width: '100%', marginBottom: 15 } }>
             <Text style={ styles.label }> Acompanhantes </Text>
                 < Text style = {{ fontSize: 12, color: '#555' }
-}> { companions } </Text>
+}>
+    { companions }
+    </Text>
     </View>
                 )}
 
 <View style={ styles.detailsBox }>
-    <Text style={ styles.label }> Sugestao para levar: </Text>
+    <Text style={ styles.label }> Sugestão para levar: </Text>
         < Text style = {{ fontSize: 12, color: '#555', marginTop: 5 }}>🍖 { meat } de Carne </Text>
             < Text style = {{ fontSize: 12, color: '#555' }}>🥤 { drinks } de Bebida </Text>
                 </View>
@@ -139,7 +141,6 @@ const TicketPdf = ({ name, guests, companions, meat, drinks }: any) => (
                     </Page>
                     </Document>
 );
-
 
 function generateEmailHtml(name: string, guests: number, companions: string, meat: string, drinks: string) {
     return `

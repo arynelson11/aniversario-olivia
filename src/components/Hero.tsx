@@ -12,7 +12,7 @@ export default function Hero() {
             >
                 {/* Circular Photo Holder Placeholder */}
                 <div className="w-48 h-48 md:w-64 md:h-64 flex items-center justify-center relative">
-                    <img src="/daisy.png" alt="Margarida" className="w-full h-full object-contain opacity-90 mix-blend-multiply" />
+                    <img src="/daisy.png" alt="Margarida" className="w-full h-full object-contain opacity-90" />
                 </div>
             </motion.div>
 

@@ -43,7 +43,7 @@ export default function RSVP() {
             setFormState('success');
         } catch (error) {
             console.error("Erro ao enviar:", error);
-            alert("Ops! Houve um erro ao enviar. Por favor, tente novamente.");
+            alert(`Ops! Algo deu errado: ${error}`);
             setFormState('idle');
         }
     };

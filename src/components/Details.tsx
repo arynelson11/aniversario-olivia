@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Calendar, Clock, MapPin, UtensilsCrossed, Waves, Gamepad2, Music } from 'lucide-react';
 
-const DetailCard = ({ icon: Icon, title, text, subtext, delay }: { icon: any, title: string, text: string, subtext?: string, delay: number }) => (
+const DetailCard = ({ icon: Icon, title, text, subtext, delay }: { icon: any, title: string, text: React.ReactNode, subtext?: React.ReactNode, delay: number }) => (
     <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -14,7 +14,7 @@ const DetailCard = ({ icon: Icon, title, text, subtext, delay }: { icon: any, ti
         </div>
         <h3 className="font-heading text-2xl font-bold mb-2 text-text">{title}</h3>
         <p className="font-body text-lg text-text/90 font-medium">{text}</p>
-        {subtext && <p className="font-body text-sm text-text/60 mt-1">{subtext}</p>}
+        {subtext && <div className="font-body text-sm text-text/60 mt-1">{subtext}</div>}
     </motion.div>
 );
 
@@ -63,7 +63,16 @@ export default function Details() {
                         icon={MapPin}
                         title="Local"
                         text="Macaé"
-                        subtext="Rua Zelina Vasconcelos Medeiros S/N QD:32, LT:51 - CEP 27971-221"
+                        subtext={
+                            <a
+                                href="https://www.google.com/maps/place/Espa%C3%A7o+Atl%C3%A2ntico/@-22.3253871,-41.752044,13z/data=!4m6!3m5!1s0x962518167506e9:0x623b85c123bb0c80!8m2!3d-22.3111359!4d-41.750024!16s%2Fg%2F11sqcsm3md?entry=ttu&g_ep=EgoyMDI2MDEyNS4wIKXMDSoASAFQAw%3D%3D"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:text-primary transition-colors underline decoration-primary/30 underline-offset-4"
+                            >
+                                Rua Zelina Vasconcelos Medeiros S/N QD:32, LT:51 - CEP 27971-221
+                            </a>
+                        }
                         delay={0.6}
                     />
                 </div>

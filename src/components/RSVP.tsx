@@ -25,24 +25,18 @@ export default function RSVP() {
         const companionsString = companions.length > 0 ? companions.join(', ') : "Nenhum";
 
         try {
-            await fetch("https://formsubmit.co/ajax/aniversariodaolivia1@gmail.com", {
+            await fetch("/api/send", {
                 method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    "Nome do Convidado": name,
-                    "Email de Contato": email,
-                    "Total de Pessoas": `${guests}`,
-                    "Acompanhantes": companionsString,
-                    "Mensagem": message || "Sem mensagem",
-                    _subject: `Nova Presença: ${name} + ${companions.length}`,
-                    "🍖 Carne (kg)": `${(guests * 0.4).toFixed(1)}kg`,
-                    "🥤 Bebida (L)": `${(guests * 0.8).toFixed(1)}L`,
-                    _cc: email, // Send copy to guest
-                    _template: "table",
-                    _captcha: "false"
+                    name,
+                    email,
+                    guests,
+                    companions: companionsString,
+                    meat: `${(guests * 0.4).toFixed(1)}kg`,
+                    drinks: `${(guests * 0.8).toFixed(1)}L`
                 })
             });
             setTicketData({ name, guests, companions: companionsString });

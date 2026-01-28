@@ -9,11 +9,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-email/components": "^1.0.6",
+    "@react-email/render": "^2.0.4",
     "clsx": "^2.1.1",
     "framer-motion": "^11.0.28",
     "lucide-react": "^0.378.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "resend": "^6.9.1",
     "tailwind-merge": "^2.3.0"
   },
   "devDependencies": {

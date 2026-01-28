@@ -231,41 +231,46 @@ export async function POST(request: Request) {
 
         const emailHtml = generateEmailHtml(name, guests, companions, meat, drinks);
 
-        // Generate PDF
-        console.log("Generating PDF...");
-        const pdfStream = await renderToStream(
-            <TicketPdf
-                name={name}
-                guests={guests}
-                companions={companions}
-                meat={meat}
-                drinks={drinks}
-            />
-        );
+        let pdfBuffer: Buffer | null = null;
+        try {
+            console.log("Generating PDF...");
+            const pdfStream = await renderToStream(
+                <TicketPdf
+                    name={name}
+                    guests={guests}
+                    companions={companions}
+                    meat={meat}
+                    drinks={drinks}
+                />
+            );
+            console.log("Converting PDF to Buffer...");
+            pdfBuffer = await streamToBuffer(pdfStream);
+        } catch (pdfError) {
+            console.error("PDF Generation Failed (Skipping Attachment):", pdfError);
+            // We proceed without the PDF to ensure the user still gets the confirmation
+        }
 
-        // Convert stream to Buffer to avoid type issues with Nodemailer
-        console.log("Converting PDF to Buffer...");
-        const pdfBuffer = await streamToBuffer(pdfStream);
-
-        const mailOptions = {
+        const mailOptions: any = {
             from: `"Aniversário da Olívia" <${process.env.GMAIL_USER}>`,
             to: `${email}, aniversariodaolivia1@gmail.com`,
             subject: `Confirmação VIP: ${name} no Aniversário da Olívia! 🌼`,
             html: emailHtml,
-            attachments: [
-                {
-                    filename: 'Ingresso-Olivia.pdf',
-                    content: pdfBuffer,
-                    contentType: 'application/pdf'
-                }
-            ]
+            attachments: []
         };
+
+        if (pdfBuffer) {
+            mailOptions.attachments.push({
+                filename: 'Ingresso-Olivia.pdf',
+                content: pdfBuffer,
+                contentType: 'application/pdf'
+            });
+        }
 
         console.log("Sending email...");
         const info = await transporter.sendMail(mailOptions) as any;
         console.log("Email sent:", info.messageId);
 
-        return new Response(JSON.stringify({ message: "Email sent", messageId: info.messageId }), {
+        return new Response(JSON.stringify({ message: "Email sent", messageId: info.messageId, pdfGenerated: !!pdfBuffer }), {
             status: 200,
             headers: { 'Content-Type': 'application/json' },
         });

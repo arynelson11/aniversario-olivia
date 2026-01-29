@@ -9,7 +9,11 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-function generateEmailHtml(name: string, guests: number, companions: string, meat: string, drinks: string) {
+function generateEmailHtml(name: string, guests: number, babies: number, children: number, companions: string, meat: string, drinks: string) {
+    const guestText = guests === 1 ? 'Pessoa' : 'Pessoas';
+    const childrenText = children === 1 ? 'Criança' : 'Crianças';
+    const babiesText = babies === 1 ? 'Bebê' : 'Bebês';
+
     return `
     <!DOCTYPE html>
     <html>
@@ -25,6 +29,9 @@ function generateEmailHtml(name: string, guests: number, companions: string, mea
             .stat-box { background-color: rgba(255, 215, 0, 0.1); border-radius: 12px; padding: 12px; text-align: center; }
             .stat-value { color: #5D4037; font-size: 16px; font-weight: bold; margin: 0; }
             .footer { color: rgba(93, 64, 55, 0.3); font-size: 10px; text-align: center; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; margin-top: 32px; }
+            .badge { display: inline-block; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; margin-right: 4px; }
+            .badge-blue { background-color: #E3F2FD; color: #1565C0; }
+            .badge-pink { background-color: #FCE4EC; color: #C2185B; }
         </style>
     </head>
     <body>
@@ -43,7 +50,7 @@ function generateEmailHtml(name: string, guests: number, companions: string, mea
                         <td style="padding-right: 6px; width: 50%;">
                             <div class="stat-box">
                                 <p class="label">Total</p>
-                                <p class="stat-value">${guests} ${guests === 1 ? 'Pessoa' : 'Pessoas'}</p>
+                                <p class="stat-value">${guests + children + babies} Pessoas</p>
                             </div>
                         </td>
                         <td style="padding-left: 6px; width: 50%;">
@@ -54,6 +61,13 @@ function generateEmailHtml(name: string, guests: number, companions: string, mea
                         </td>
                     </tr>
                 </table>
+
+                ${(children > 0 || babies > 0) ? `
+                <div style="text-align: center; margin-top: 12px;">
+                    ${children > 0 ? `<span class="badge badge-blue">${children} ${childrenText}</span>` : ''}
+                    ${babies > 0 ? `<span class="badge badge-pink">${babies} ${babiesText}</span>` : ''}
+                </div>
+                ` : ''}
 
                 ${guests > 1 ? `
                 <div style="margin-top: 16px;">
@@ -80,16 +94,16 @@ export async function POST(request: Request) {
     try {
         console.log("API Invoked");
         const body = await request.json();
-        const { name, email, guests, companions, meat, drinks } = body;
+        const { name, email, guests, babies, children, companions, meat, drinks } = body;
 
-        console.log("Payload received:", { name, email, guests });
+        console.log("Payload received:", { name, email, guests, babies, children });
 
         if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
             console.error("Missing Env Vars");
             throw new Error('Configuração de email ausente no servidor.');
         }
 
-        const emailHtml = generateEmailHtml(name, guests, companions, meat, drinks);
+        const emailHtml = generateEmailHtml(name, guests, babies || 0, children || 0, companions, meat, drinks);
 
         const mailOptions = {
             from: `"Aniversário da Olívia" <${process.env.GMAIL_USER}>`,

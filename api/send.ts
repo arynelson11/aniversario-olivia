@@ -10,7 +10,6 @@ const transporter = nodemailer.createTransport({
 });
 
 function generateEmailHtml(name: string, guests: number, babies: number, children: number, companions: string, meat: string, drinks: string) {
-    const guestText = guests === 1 ? 'Pessoa' : 'Pessoas';
     const childrenText = children === 1 ? 'Criança' : 'Crianças';
     const babiesText = babies === 1 ? 'Bebê' : 'Bebês';
 
